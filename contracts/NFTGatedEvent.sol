@@ -17,6 +17,9 @@ contract EventNFT is ERC721, Ownable {
     // Mapping to track all tokens owned by each user
     mapping(address => uint256[]) private ownedTokens;
 
+    // Event for tracking access grants
+    event AccessEvent(address indexed user, uint256 indexed tokenId, bool granted);
+
     // Constructor to initialize the NFT collection with a custom max supply
     constructor(string memory name, string memory symbol, uint256 _maxSupply) ERC721(name, symbol) Ownable(msg.sender) {
         require(_maxSupply > 0, "Max supply must be greater than 0");
@@ -63,13 +66,17 @@ contract EventNFT is ERC721, Ownable {
         return (ownedTokens[user], ownsToken);
     }
 
-    // Function to grant access to the event based on NFT ownership
-    function grantEventAccess(address user, uint256 tokenId) public view returns (string memory) {
-        // Check if the user owns the specified NFT tokenId
+    // Function to grant access to the event based on NFT ownership and emit an event
+    function grantEventAccess(address user, uint256 tokenId) public returns (string memory) {
         (, bool ownsToken) = tokensOwnedOrVerifyOwnership(user, tokenId);
+
         if (ownsToken) {
+            // Emit an AccessGranted event if the user owns the specified tokenId
+            emit AccessEvent(user, tokenId, true);
             return "Access Granted!";
         } else {
+            // Emit an AccessDenied event if the user does not own the tokenId
+            emit AccessEvent(user, tokenId, false);
             return "Access Denied!";
         }
     }
