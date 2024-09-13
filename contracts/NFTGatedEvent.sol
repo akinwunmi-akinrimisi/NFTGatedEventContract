@@ -19,6 +19,7 @@ contract EventNFT is ERC721, Ownable {
         _tokenIdCounter++;
         _safeMint(to, tokenId);
     }
+
     // Function to get all tokenIds owned by a specific user
     function tokensOwnedBy(address user) public view returns (uint256[] memory) {
         uint256 tokenCount = balanceOf(user);
@@ -39,5 +40,15 @@ contract EventNFT is ERC721, Ownable {
     // Function to check if a user owns a specific NFT
     function verifyOwnership(address user, uint256 tokenId) public view returns (bool) {
         return ownerOf(tokenId) == user;
+    }
+
+    // Function to grant access to the event based on NFT ownership
+    function grantEventAccess(address user, uint256 tokenId) public view returns (string memory) {
+        // Check if the user owns the specified NFT tokenId
+        if (verifyOwnership(user, tokenId)) {
+            return "Access Granted!";
+        } else {
+            return "Access Denied!";
+        }
     }
 }
