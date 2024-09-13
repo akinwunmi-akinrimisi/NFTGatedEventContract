@@ -1,0 +1,16 @@
+{
+    "name": "Event Ticket #1",
+    "description": "This is a VIP ticket for an exclusive event.",
+    "image": "https://ipfs.io/ipfs/QmbLVBCmEuFAfF9brkvYmU2mA4w9VbSM1YJKCpf3CFFLKD",
+    "attributes": [
+      {
+        "trait_type": "Seat",
+        "value": "Front Row"
+      },
+      {
+        "trait_type": "Access",
+        "value": "VIP"
+      }
+    ]
+  }
+  
