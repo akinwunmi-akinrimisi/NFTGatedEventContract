@@ -29,6 +29,13 @@ contract EventNFT is ERC721, Ownable {
         // Check if recipient address is valid
         require(to != address(0), "Cannot mint to the zero address");
 
+        // Check if recipient is not a contract address using embedded logic
+        uint32 size;
+        assembly {
+            size := extcodesize(to)
+        }
+        require(size == 0, "Cannot mint to a contract address");
+
         // Check if the user has already minted an NFT
         require(!hasMinted[to], "User has already minted an NFT");
 
