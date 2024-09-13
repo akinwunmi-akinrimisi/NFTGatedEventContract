@@ -20,6 +20,9 @@ contract EventNFT is ERC721, Ownable {
     // Event for tracking access grants
     event AccessEvent(address indexed user, uint256 indexed tokenId, bool granted);
 
+    // Event for tracking minting success
+    event MintingSuccessful(address indexed to, uint256 indexed tokenId);
+
     // Constructor to initialize the NFT collection with a custom max supply
     constructor(string memory name, string memory symbol, uint256 _maxSupply) ERC721(name, symbol) Ownable(msg.sender) {
         require(_maxSupply > 0, "Max supply must be greater than 0");
@@ -55,6 +58,9 @@ contract EventNFT is ERC721, Ownable {
 
         // Add the minted tokenId to the user's list of owned tokens
         ownedTokens[to].push(tokenId);
+
+        // Emit MintingSuccessful event
+        emit MintingSuccessful(to, tokenId);
     }
 
     // Function to return all tokens owned by a user or verify ownership of a specific token
