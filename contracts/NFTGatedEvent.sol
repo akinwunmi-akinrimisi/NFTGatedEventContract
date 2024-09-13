@@ -11,6 +11,9 @@ contract EventNFT is ERC721, Ownable {
     // Maximum supply of NFTs
     uint256 public maxSupply;
 
+    // Mapping to track whether a user has already minted an NFT
+    mapping(address => bool) public hasMinted;
+
     // Constructor to initialize the NFT collection with a custom max supply
     constructor(string memory name, string memory symbol, uint256 _maxSupply) ERC721(name, symbol) Ownable(msg.sender) {
         require(_maxSupply > 0, "Max supply must be greater than 0");
@@ -18,7 +21,7 @@ contract EventNFT is ERC721, Ownable {
         _tokenIdCounter = 0; // Start token IDs at 0
     }
 
-    // Function to safely mint a new NFT with max supply limit
+    // Function to safely mint a new NFT with max supply and one mint per user limit
     function safeMint(address to) public onlyOwner {
         // Check if minting would exceed the max supply of NFTs
         require(_tokenIdCounter < maxSupply, "Max supply reached, no more NFTs can be minted");
@@ -26,10 +29,16 @@ contract EventNFT is ERC721, Ownable {
         // Check if recipient address is valid
         require(to != address(0), "Cannot mint to the zero address");
 
+        // Check if the user has already minted an NFT
+        require(!hasMinted[to], "User has already minted an NFT");
+
         // Mint the new NFT
         uint256 tokenId = _tokenIdCounter;
         _tokenIdCounter++;
         _safeMint(to, tokenId);
+
+        // Mark the user as having minted an NFT
+        hasMinted[to] = true;
     }
 
     // Function to get all tokenIds owned by a specific user
