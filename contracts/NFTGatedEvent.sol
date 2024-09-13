@@ -8,13 +8,25 @@ contract EventNFT is ERC721, Ownable {
     // Token ID counter for unique tokens
     uint256 private _tokenIdCounter;
 
-    // Constructor to initialize the NFT collection
-    constructor(string memory name, string memory symbol) ERC721(name, symbol) Ownable(msg.sender) {
+    // Maximum supply of NFTs
+    uint256 public maxSupply;
+
+    // Constructor to initialize the NFT collection with a custom max supply
+    constructor(string memory name, string memory symbol, uint256 _maxSupply) ERC721(name, symbol) Ownable(msg.sender) {
+        require(_maxSupply > 0, "Max supply must be greater than 0");
+        maxSupply = _maxSupply;
         _tokenIdCounter = 0; // Start token IDs at 0
     }
 
-    // Function to safely mint a new NFT
+    // Function to safely mint a new NFT with max supply limit
     function safeMint(address to) public onlyOwner {
+        // Check if minting would exceed the max supply of NFTs
+        require(_tokenIdCounter < maxSupply, "Max supply reached, no more NFTs can be minted");
+
+        // Check if recipient address is valid
+        require(to != address(0), "Cannot mint to the zero address");
+
+        // Mint the new NFT
         uint256 tokenId = _tokenIdCounter;
         _tokenIdCounter++;
         _safeMint(to, tokenId);
