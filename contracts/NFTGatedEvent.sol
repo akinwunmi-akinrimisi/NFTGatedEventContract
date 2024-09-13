@@ -19,5 +19,25 @@ contract EventNFT is ERC721, Ownable {
         _tokenIdCounter++;
         _safeMint(to, tokenId);
     }
+    // Function to get all tokenIds owned by a specific user
+    function tokensOwnedBy(address user) public view returns (uint256[] memory) {
+        uint256 tokenCount = balanceOf(user);
+        uint256[] memory ownedTokenIds = new uint256[](tokenCount);
+        uint256 counter = 0;
 
+        // Loop through all minted tokens and find the ones owned by the user
+        for (uint256 i = 0; i < _tokenIdCounter; i++) {
+            if (ownerOf(i) == user) {
+                ownedTokenIds[counter] = i;
+                counter++;
+            }
+        }
+
+        return ownedTokenIds;
+    }
+
+    // Function to check if a user owns a specific NFT
+    function verifyOwnership(address user, uint256 tokenId) public view returns (bool) {
+        return ownerOf(tokenId) == user;
+    }
 }
