@@ -14,6 +14,9 @@ contract EventNFT is ERC721, Ownable {
     // Mapping to track whether a user has already minted an NFT
     mapping(address => bool) public hasMinted;
 
+    // Mapping to track all tokens owned by each user
+    mapping(address => uint256[]) private ownedTokens;
+
     // Constructor to initialize the NFT collection with a custom max supply
     constructor(string memory name, string memory symbol, uint256 _maxSupply) ERC721(name, symbol) Ownable(msg.sender) {
         require(_maxSupply > 0, "Max supply must be greater than 0");
@@ -46,27 +49,26 @@ contract EventNFT is ERC721, Ownable {
 
         // Mark the user as having minted an NFT
         hasMinted[to] = true;
+
+        // Add the minted tokenId to the user's list of owned tokens
+        ownedTokens[to].push(tokenId);
     }
 
-    // Function to get all tokenIds owned by a specific user
-    function tokensOwnedBy(address user) public view returns (uint256[] memory) {
-        uint256 tokenCount = balanceOf(user);
-        uint256[] memory ownedTokenIds = new uint256[](tokenCount);
-        uint256 counter = 0;
+    // Function to return all tokens owned by a user or verify ownership of a specific token
+    function tokensOwnedOrVerifyOwnership(address user, uint256 tokenId) public view returns (uint256[] memory, bool) {
+        // Check if the user owns the specific tokenId (if tokenId is greater than 0)
+        bool ownsToken = tokenId == 0 ? false : ownerOf(tokenId) == user;
 
-        // Loop through all minted tokens and find the ones owned by the user
-        for (uint256 i = 0; i < _tokenIdCounter; i++) {
-            if (ownerOf(i) == user) {
-                ownedTokenIds[counter] = i;
-                counter++;
-            }
-        }
-
-        return ownedTokenIds;
+        // Return the array of tokenIds owned by the user and the ownership result
+        return (ownedTokens[user], ownsToken);
     }
 
     // Function to check if a user owns a specific NFT
     function verifyOwnership(address user, uint256 tokenId) public view returns (bool) {
+        // Ensure the token exists
+        // require(_exists(tokenId), "Token does not exist");
+
+        // Return true if the user owns the specified tokenId
         return ownerOf(tokenId) == user;
     }
 
